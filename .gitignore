@@ -1,0 +1,32 @@
+# env files store config stuff
+.env
+env.sh
+.env/
+env/
+venv/
+
+# Django stuff:
+*.log
+
+*.DS_Store
+*.pyc
+__pycache__
+
+# celery
+celerybeat-schedule
+celerybeat.pid
+
+# Zipped files
+*.gz
+
+# Dump files
+dump.rdb
+
+# Sqlite database file
+db.sqlite3
+
+# Test results
+htmlcov/
+
+# Ignore local_settings.py file
+local_settings.py

@@ -1,0 +1,151 @@
+<html>
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>The WealthSmith</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.18/"></script>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+ 
+    <script>
+
+        require(
+            [
+                "esri/config",
+                "esri/Map",
+                "esri/views/MapView",
+                "esri/Graphic",
+                "esri/geometry/Point",
+                "esri/layers/GraphicsLayer",
+            ], function (esriConfig, Map, MapView, Graphic, Point, GraphicsLayer) {
+
+                esriConfig.apiKey = "AAPK81c70137642942c982814427a9180545K1FfkuyVeUhhO-i5Y0FvDM_qZ-GShb9oLOQ6WaqYU5Fthu9fjAEu7SqC3irSAFRq";
+
+                const map = new Map({
+                    basemap: "arcgis-imagery" // Basemap layer service,
+            }
+        );
+
+        /* Centre map view position */
+        const view = new MapView({
+            map: map,
+            center: [36.90496719962048, 0.12668627653988843], // Longitude, latitude
+            container: "viewDiv",
+            zoom: 19, // Zoom level
+            constraints: {
+                minZoom: 15,
+                maxZoom: 19
+            },
+            popup: {
+                dockEnabled: true,
+                dockOptions: {
+                // Disables the dock button from the popup
+                buttonEnabled: false,
+                // Ignore the default sizes that trigger responsive docking
+                breakpoint: false,
+                position: 'top-left',
+                }
+            },
+            container: "viewDiv" // Div element
+        });
+
+        popup = view.popup;
+        const graphicsLayer = new GraphicsLayer();
+        map.add(graphicsLayer);
+
+        view.when(function() {
+            limitMapExtent(view);
+        });
+
+        function limitMapExtent(view) {
+            var initialExtent = view.extent;
+
+            view.watch('stationary', function(event) {
+              if (!event) {
+                return;
+              }
+              //If the map has moved to the point where it's center is
+              //outside the initial boundaries, then move it back to the
+              //edge where it moved out
+              var currentCenter = view.extent.center;
+              if (!initialExtent.contains(currentCenter)) {
+    
+                var newCenter = view.extent.center;
+    
+                //check each side of the initial extent and if the
+                //current center is outside that extent,
+                //set the new center to be on the edge that it went out on
+                if (currentCenter.x < initialExtent.xmin) {
+                  newCenter.x = initialExtent.xmin;
+                }
+                if (currentCenter.x > initialExtent.xmax) {
+                  newCenter.x = initialExtent.xmax;
+                }
+                if (currentCenter.y < initialExtent.ymin) {
+                  newCenter.y = initialExtent.ymin;
+                }
+                if (currentCenter.y > initialExtent.ymax) {
+                  newCenter.y = initialExtent.ymax;
+                }
+                view.goTo(initialExtent);
+                // view.goTo(newCenter);
+              }
+            });
+        }
+
+        var coordinates_as_string = "{{ coordinates | safe }}";
+        coordinates = JSON.parse(coordinates_as_string.replace(/'/g,"\""));
+
+        coordinates_length = Object.keys(coordinates).length
+        for (const [key, value] of Object.entries(coordinates)) {
+          const polygon = {
+            type: "polygon",
+            rings: value
+          };
+
+          const simpleFillSymbol = {
+              type: "simple-fill",
+              color: [227, 139, 79, 0.8],  // Orange, opacity 80%
+              outline: {
+                  color: [255, 255, 255],
+                  width: 1
+              }
+          };
+
+          var polygonGraphic = new Graphic({
+              geometry: polygon,
+              symbol: simpleFillSymbol
+
+          });
+          graphicsLayer.add(polygonGraphic);
+        }
+
+
+        
+
+
+        });
+    </script>
+
+    </head>
+<body>
+    <div id="viewDiv"></div>
+
+</body>
+
+</html>

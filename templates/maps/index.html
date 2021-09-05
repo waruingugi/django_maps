@@ -155,8 +155,10 @@
 
         var pointx = {
           type: "point", // autocasts as new Point()
-          x: 36.90496719962048,
-          y: 0.12668627653988843
+          x: 36.905215,
+          y: 0.126417,
+          // x: 36.90496719962048,
+          // y: 0.12668627653988843
         };
   
         var pointGraphicx = new Graphic({
@@ -164,11 +166,49 @@
           symbol: {
             type: "web-style", // autocasts as new WebStyleSymbol()
             name: "Bus",
-            styleName: "EsriRealisticTransportationStyle"
+            styleName: "EsriRealisticTransportationStyle",
           },
         });
   
         graphicsLayer.add(pointGraphicx);
+
+        /*
+        pointGraphicx.symbol.fetchSymbol().then(function(actualSymbol) {
+          pointGraphicx.symbol = actualSymbol;
+        });
+        */
+
+        /*
+        var pointxy = {
+          type: "point", // autocasts as new Point()
+          x: 36.90496719962048,
+          y: 0.12668627653988843
+        };
+        */
+  
+        var pointGraphicxy = new Graphic({
+          geometry: pointx,
+          symbol: {
+            type: "web-style",  // autocasts as new WebStyleSymbol()
+            styleName: "EsriRealisticTransportationStyle",
+            name: "Ambulance"
+          },
+        });
+        
+
+        pointGraphicxy.symbol.fetchSymbol()
+          .then(function(ambulanceSymbol){
+            var objectSymbolLayer = ambulanceSymbol.symbolLayers.getItemAt(0);
+            //objectSymbolLayer.material = { color: "red" };
+            objectSymbolLayer.height *= 2;
+            objectSymbolLayer.width *= 2;
+            objectSymbolLayer.depth *= 2;
+            objectSymbolLayer.heading = 90;
+        
+            var renderer = pointGraphicxy.clone();
+            pointGraphicx.symbol = ambulanceSymbol;
+            pointGraphicxy = renderer;
+          });
 
 
         

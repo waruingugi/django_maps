@@ -1,12 +1,12 @@
 <html>
-    <head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>The WealthSmith</title>
+    <title>Maps</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
+    <style>¨
       html,
       body,
       #viewDiv {
@@ -26,22 +26,23 @@
 
       require(
         [
-            "esri/config",
-            "esri/views/SceneView",
-            "esri/Map",
-            "esri/views/MapView",
-            "esri/Graphic",
-            "esri/geometry/Point",
-            "esri/layers/GraphicsLayer",
-        ], (esriConfig, SceneView, Map, MapView, Graphic, Point, GraphicsLayer) => {
+          "esri/config",
+          "esri/views/SceneView",
+          "esri/Map",
+          "esri/views/MapView",
+          "esri/Graphic",
+          "esri/geometry/Point",
+          "esri/layers/GraphicsLayer",
+        ],
+        (esriConfig, SceneView, Map, MapView, Graphic, Point, GraphicsLayer) => {
 
-            esriConfig.apiKey = "AAPK81c70137642942c982814427a9180545K1FfkuyVeUhhO-i5Y0FvDM_qZ-GShb9oLOQ6WaqYU5Fthu9fjAEu7SqC3irSAFRq";
+          esriConfig.apiKey = "AAPK81c70137642942c982814427a9180545K1FfkuyVeUhhO-i5Y0FvDM_qZ-GShb9oLOQ6WaqYU5Fthu9fjAEu7SqC3irSAFRq";
 
-            const map = new Map({
-                basemap: "arcgis-imagery", // Basemap layer service,
-                ground: "world-elevation"
-            }
-      );
+          const map = new Map({
+            basemap: "arcgis-imagery", // Basemap layer service,
+            ground: "world-elevation"
+          }
+        );
 
           /* Centre map view position */
           const view = new SceneView({
@@ -99,28 +100,28 @@
             var currentCenter = view.extent.center;
 
             var newCenter = view.extent.center;
-            console.log(view.camera);
+            // console.log(view.camera);
   
               //check each side of the initial extent and if the
               //current center is outside that extent,
               //set the new center to be on the edge that it went out on
               
-              if ( (currentCenter.x + 500) < initialExtent.xmin ) {// Restrict Movement Leftwards: 900 to 400 restricts more
-                console.log('xmin');
-                view.camera = cam;
-              }
-              if ((currentCenter.x + 1500) > initialExtent.xmax) {// Restrict Movement Rightwards: 400 to 1000 restricts more
-                console.log('xmax');
-                view.camera = cam;
-              }
-              if ((currentCenter.y + 1000) < initialExtent.ymin) {  // Restrict Movement Rightwards: 900 to 400 restricts more
-                console.log('ymin');
-                view.camera = cam;
-              }
-              if (currentCenter.y > (initialExtent.ymax - 1500) ) {  // Restrict Movement Upwards: 1500 to 1700 restricts more
-                console.log('ymax');
-                view.camera = cam;
-              }
+            if ( (currentCenter.x + 500) < initialExtent.xmin ) {// Restrict Movement Leftwards: 900 to 400 restricts more
+              console.log('xmin');
+              view.camera = cam;
+            }
+            if ((currentCenter.x + 1500) > initialExtent.xmax) {// Restrict Movement Rightwards: 400 to 1000 restricts more
+              console.log('xmax');
+              view.camera = cam;
+            }
+            if ((currentCenter.y + 1000) < initialExtent.ymin) {  // Restrict Movement Rightwards: 900 to 400 restricts more
+              console.log('ymin');
+              view.camera = cam;
+            }
+            if (currentCenter.y > (initialExtent.ymax - 1500) ) {  // Restrict Movement Upwards: 1500 to 1700 restricts more
+              console.log('ymax');
+              view.camera = cam;
+            }
             
           });
         }
@@ -153,7 +154,7 @@
         }
 
 
-        var pointx = {
+        var point_one = {
           type: "point", // autocasts as new Point()
           x: 36.905215,
           y: 0.126417,
@@ -162,7 +163,7 @@
         };
   
         var pointGraphicx = new Graphic({
-          geometry: pointx,
+          geometry: point_one,
           symbol: {
             type: "web-style", // autocasts as new WebStyleSymbol()
             name: "Bus",
@@ -186,33 +187,71 @@
         };
         */
   
-        var pointGraphicxy = new Graphic({
-          geometry: pointx,
+        var car = new Graphic({
+          geometry: point_one,
           symbol: {
             type: "web-style",  // autocasts as new WebStyleSymbol()
-            styleName: "EsriRealisticTransportationStyle",
-            name: "Ambulance"
+            name: "Taxi",
+            styleName: "EsriRealisticTransportationStyle"
           },
         });
         
 
-        pointGraphicxy.symbol.fetchSymbol()
-          .then(function(ambulanceSymbol){
-            var objectSymbolLayer = ambulanceSymbol.symbolLayers.getItemAt(0);
+        car.symbol.fetchSymbol()
+          .then(function(carSymbol){
+            var objectSymbolLayer = carSymbol.symbolLayers.getItemAt(0);
             //objectSymbolLayer.material = { color: "red" };
             objectSymbolLayer.height *= 2;
             objectSymbolLayer.width *= 2;
             objectSymbolLayer.depth *= 2;
             objectSymbolLayer.heading = 90;
         
-            var renderer = pointGraphicxy.clone();
-            pointGraphicx.symbol = ambulanceSymbol;
-            pointGraphicxy = renderer;
-          });
+            var renderer = car.clone();
+            pointGraphicx.symbol = carSymbol;
+            car = renderer;
+        });
 
-
+        // Coconut
+        var point_car_two = {
+          type: "point", // autocasts as new Point()
+          x: 36.906371,
+          y: 0.122566
+        };
+  
+        var cartwoGraphic = new Graphic({
+          geometry: point_car_two,
+          symbol: {
+            type: "web-style", // autocasts as new WebStyleSymbol()
+            name: "Cocos",
+            styleName: "EsriRealisticTreesStyle"
+          },
+        });
+  
+        graphicsLayer.add(cartwoGraphic);
+  
+        var customizedcartwoGraphic = new Graphic({
+          geometry: point_car_two,
+          symbol: {
+            type: "web-style", // autocasts as new WebStyleSymbol()
+            name: "Bus",
+            styleName: "EsriRealisticTransportationStyle"
+          },
+        });
         
 
+        customizedcartwoGraphic.symbol.fetchSymbol()
+          .then(function(symbolToCustomize){
+            var objectSymbolLayer = symbolToCustomize.symbolLayers.getItemAt(0);
+            //objectSymbolLayer.material = { color: "red" };
+            objectSymbolLayer.height *= 2;
+            objectSymbolLayer.width *= 2;
+            objectSymbolLayer.depth *= 2;
+            // objectSymbolLayer.heading = 90;
+        
+            var renderer = customizedcartwoGraphic.clone();
+            cartwoGraphic.symbol = symbolToCustomize;
+            customizedcartwoGraphic = renderer;
+        });
 
         });
     </script>

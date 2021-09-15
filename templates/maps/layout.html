@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{{ title }}</title>
+    {% load static %}
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}" /> 
+    <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome-all.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/fonts/font-awesome.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome5-overrides.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}" />
+
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css">
+
+    <!-- DO NOT change the position and order of these scripts -->
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
+
+
+    <script src="https://js.arcgis.com/4.18/"></script>
+    <!-- End of scripts: DO not touch! -->  
+
+
+    <script>
+
+        require(
+          [
+            "esri/config",
+            "esri/views/SceneView",
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/Graphic",
+            "esri/geometry/Point",
+            "esri/layers/GraphicsLayer",
+          ],
+          (esriConfig, SceneView, Map, MapView, Graphic, Point, GraphicsLayer) => {
+  
+            esriConfig.apiKey = "AAPK81c70137642942c982814427a9180545K1FfkuyVeUhhO-i5Y0FvDM_qZ-GShb9oLOQ6WaqYU5Fthu9fjAEu7SqC3irSAFRq";
+  
+            const map = new Map({
+              basemap: "arcgis-imagery", // Basemap layer service,
+              ground: "world-elevation"
+            }
+          );
+  
+            /* Centre map view position */
+            const view = new SceneView({
+              map: map,
+              center: [36.906036137679244, 0.1239985250874409], // Longitude, latitude
+              container: "viewDiv",
+              scale: 8000,
+              camera: {
+                  position: {
+                      x: 36.900860484252796, // lon
+                      y: 0.12008296151677951,   // lat
+                      z: 2500 // elevation in meters
+                  },
+                  tilt: 45.2,
+                  heading: 53.56399816062018 // angle the land is facing
+              },
+              constraints: {
+                  tilt: {max: 65},
+                  altitude: {max: 3000, min: 1800}
+              },
+              container: "map-view" // Div element
+          });
+  
+          // Removes the compass widget from the view
+          view.ui.remove("compass");
+          // view.ui.remove('navigation-toggle');
+  
+          const graphicsLayer = new GraphicsLayer();
+          map.add(graphicsLayer);
+  
+          view.when(function() {
+              limitMapExtent(view);
+          });
+  
+          function limitMapExtent(view) {
+            var initialExtent = view.extent;
+            var cam = view.camera.clone();
+            cam.position = {
+              latitude: 0.12008296151677951,
+              longitude: 36.900860484252796,
+              z: 2500
+            }
+            cam.tilt = 45.2;
+  
+            view.watch('stationary', function(event) {
+              if (!event) {
+                return;
+              }
+              //If the map has moved to the point where it's center is
+              //outside the initial boundaries, then move it back to the
+              //edge where it moved out
+              // console.log(view.camera.position);
+              // console.log(view.center);
+  
+              var currentCenter = view.extent.center;
+  
+              var newCenter = view.extent.center;
+              // console.log(view.camera);
+    
+                //check each side of the initial extent and if the
+                //current center is outside that extent,
+                //set the new center to be on the edge that it went out on
+                
+              if ( (currentCenter.x + 500) < initialExtent.xmin ) {// Restrict Movement Leftwards: 900 to 400 restricts more
+                console.log('xmin');
+                view.camera = cam;
+              }
+              if ((currentCenter.x + 1500) > initialExtent.xmax) {// Restrict Movement Rightwards: 400 to 1000 restricts more
+                console.log('xmax');
+                view.camera = cam;
+              }
+              if ((currentCenter.y + 1000) < initialExtent.ymin) {  // Restrict Movement Rightwards: 900 to 400 restricts more
+                console.log('ymin');
+                view.camera = cam;
+              }
+              if (currentCenter.y > (initialExtent.ymax - 1500) ) {  // Restrict Movement Upwards: 1500 to 1700 restricts more
+                console.log('ymax');
+                view.camera = cam;
+              }
+              
+            });
+          }
+  
+          var coordinates_as_string = "{{ coordinates | safe }}";
+          coordinates = JSON.parse(coordinates_as_string.replace(/'/g,"\""));
+  
+          coordinates_length = Object.keys(coordinates).length
+          for (const [key, value] of Object.entries(coordinates)) {
+            const polygon = {
+              type: "polygon",
+              rings: value
+            };
+  
+            const simpleFillSymbol = {
+                type: "simple-fill",
+                color: [0, 197, 105, 0.5],  // Orange, opacity 80%
+                outline: {
+                    color: [255, 255, 255],
+                    width: 1
+                }
+            };
+  
+            var polygonGraphic = new Graphic({
+                geometry: polygon,
+                symbol: simpleFillSymbol
+  
+            });
+            graphicsLayer.add(polygonGraphic);
+          }
+  
+  
+          var point_one = {
+            type: "point", // autocasts as new Point()
+            x: 36.905215,
+            y: 0.126417,
+            // x: 36.90496719962048,
+            // y: 0.12668627653988843
+          };
+    
+          var pointGraphicx = new Graphic({
+            geometry: point_one,
+            symbol: {
+              type: "web-style", // autocasts as new WebStyleSymbol()
+              name: "Bus",
+              styleName: "EsriRealisticTransportationStyle",
+            },
+          });
+    
+          graphicsLayer.add(pointGraphicx);
+  
+          /*
+          pointGraphicx.symbol.fetchSymbol().then(function(actualSymbol) {
+            pointGraphicx.symbol = actualSymbol;
+          });
+          */
+  
+          /*
+          var pointxy = {
+            type: "point", // autocasts as new Point()
+            x: 36.90496719962048,
+            y: 0.12668627653988843
+          };
+          */
+    
+          var car = new Graphic({
+            geometry: point_one,
+            symbol: {
+              type: "web-style",  // autocasts as new WebStyleSymbol()
+              name: "Taxi",
+              styleName: "EsriRealisticTransportationStyle"
+            },
+          });
+          
+  
+          car.symbol.fetchSymbol()
+            .then(function(carSymbol){
+              var objectSymbolLayer = carSymbol.symbolLayers.getItemAt(0);
+              objectSymbolLayer.material = { color: "yellow" };
+              objectSymbolLayer.height *= 2;
+              objectSymbolLayer.width *= 2;
+              objectSymbolLayer.depth *= 2;
+              objectSymbolLayer.heading = 90;
+          
+              var renderer = car.clone();
+              pointGraphicx.symbol = carSymbol;
+              car = renderer;
+          });
+
+
+          var point_car_two = {
+            type: "point", // autocasts as new Point()
+            x: 36.906371,
+            y: 0.122566
+          };
+    
+          var cartwoGraphic = new Graphic({
+            geometry: point_car_two,
+            symbol: {
+              type: "web-style", // autocasts as new WebStyleSymbol()
+              name: "Cocos",
+              styleName: "EsriRealisticTreesStyle"
+            },
+          });
+    
+          graphicsLayer.add(cartwoGraphic);
+    
+          var customizedcartwoGraphic = new Graphic({
+            geometry: point_car_two,
+            symbol: {
+              type: "web-style", // autocasts as new WebStyleSymbol()
+              name: "Bus",
+              styleName: "EsriRealisticTransportationStyle"
+            },
+          });
+          
+  
+          customizedcartwoGraphic.symbol.fetchSymbol()
+            .then(function(symbolToCustomize){
+              var objectSymbolLayer = symbolToCustomize.symbolLayers.getItemAt(0);
+              //objectSymbolLayer.material = { color: "red" };
+              objectSymbolLayer.height *= 2;
+              objectSymbolLayer.width *= 2;
+              objectSymbolLayer.depth *= 2;
+              // objectSymbolLayer.heading = 90;
+          
+              var renderer = customizedcartwoGraphic.clone();
+              cartwoGraphic.symbol = symbolToCustomize;
+              customizedcartwoGraphic = renderer;
+          });
+  
+        });
+    </script>
+
+</head>
+
+<body>
+
+    {% block content %}
+    <!-- body content -->
+    {% endblock %}
+
+
+    {% block scripts %}
+      <script src="{% static 'assets/js/get_blob.js' %}"></script>
+    {% endblock %}
+
+
+</body>
+
+</html>

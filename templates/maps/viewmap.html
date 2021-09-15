@@ -1,0 +1,55 @@
+{% extends "maps/layout.html" %}
+{% load static %}
+
+{% block content %}
+    {% include 'maps/details.html' %}
+
+        <section id="map-view" class="mt-3">
+            <div class="float-right mt-4 position-absolute d-md-block d-lg-block d-xl-block" id="shopping-cart">
+                <div class="card">
+                    <div class="card-body py-3">
+                        <div class="row">
+                            <div class="col">
+                                <h5 class="text-center">Cart</h5>
+                            </div>
+                        </div>
+                        <div class="table-responsive table-borderless table-responsive-sm">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td><img class="mr-2 cart-illustration" src="{% static 'assets/img/shopping-cart.svg' %}" style="background-image: url({% static 'assets/img/blobs/blob_1.svg' %} )";></td>
+                                        <td>
+                                            <p class="mb-0">1/8 acre plot</p><small class="text-muted"><strong>Deposit </strong>Kshs 40,000</small></td>
+                                        <td><button class="btn btn-light btn-sm" type="button"><i class="fa fa-remove"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><img class="mr-2 cart-illustration" src="{% static 'assets/img/shopping-cart.svg' %}" ></td>
+                                        <td>
+                                            <p class="mb-0">1/8 acre plot</p><small class="text-muted"><strong>Deposit </strong>Kshs 40,000</small></td>
+                                        <td><button class="btn btn-light btn-sm" type="button"><i class="fa fa-remove"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><img class="mr-2 cart-illustration" src="{% static 'assets/img/shopping-cart.svg' %}" ></td>
+                                        <td>
+                                            <p class="mb-0">1/8 acre plot</p><small class="text-muted"><strong>Deposit </strong>Kshs 40,000</small></td>
+                                        <td><button class="btn btn-light btn-sm" type="button"><i class="fa fa-remove"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-0">
+                                            <p class="mb-0"><strong>Total</strong></p>
+                                        </td>
+                                        <td class="py-0 text-right" colspan="2"><strong>Kshs 120,000</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col"><button class="btn btn-success btn-block my-2" type="submit">Check Out<i class="fas fa-long-arrow-alt-right ml-2"></i>&nbsp;</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+{% endblock %}

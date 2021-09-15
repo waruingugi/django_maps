@@ -1,0 +1,34 @@
+body {
+  font-family: Montserrat, sans-serif;
+  font-size: 18px;
+}
+
+.info-illustration, .cart-illustration {
+  height: 32px;
+  background-color: #FCFCFC;
+}
+
+#map-view {
+  min-height: 110vh;
+}
+
+#map-view canvas {
+  border-radius: 35px 35px 0 0;
+}
+
+#map-view canvas::after {
+  border:none !important;
+}
+
+#shopping-cart {
+  font-size: 14px;
+  right: 5vh;
+}
+
+.esri-component.esri-navigation-toggle.esri-widget {
+  border-radius: 8px;
+}
+
+.esri-component.esri-zoom.esri-widget, .esri-widget--button.esri-widget.esri-interactive {
+  border-radius: 8px !important;
+}

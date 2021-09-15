@@ -13,3 +13,14 @@ def plotting(request):
         request, 'maps/index.html',
         {'coordinates': coordinates}
     )
+
+
+def plots(request):
+    assert isinstance(request, HttpRequest)
+
+    coordinates = load_csv_coordinates()
+
+    return render(
+        request, 'maps/viewmap.html',
+        {'coordinates': coordinates}
+    )
